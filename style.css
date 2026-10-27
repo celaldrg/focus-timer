@@ -1,0 +1,1222 @@
+/* Focus Timer - dark theme, mobile first. */
+
+:root {
+  color-scheme: dark;
+  --bg: #0f172a;
+  --surface: #1e293b;
+  --raised: #273449;
+  --line: #334155;
+  --line-strong: #475569;
+  --text: #e2e8f0;
+  --muted: #94a3b8;
+  --accent: #f87171;
+  --accent-soft: rgb(248 113 113 / 0.14);
+  --on-accent: #0f172a;
+  --short: #2dd4bf;
+  --long: #818cf8;
+  --warn: #fcd34d;
+  --radius: 12px;
+  --shadow: 0 1px 0 rgb(255 255 255 / 0.04) inset, 0 20px 44px -26px rgb(0 0 0 / 0.85);
+  --ease: cubic-bezier(0.2, 0.7, 0.3, 1);
+  --fast: 150ms;
+  --normal: 220ms;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+[hidden] {
+  display: none !important;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  background:
+    radial-gradient(900px 480px at 50% -12%, rgb(248 113 113 / 0.09), transparent 65%),
+    var(--bg);
+  color: var(--text);
+  line-height: 1.45;
+}
+
+button,
+input {
+  font: inherit;
+  color: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+button:disabled {
+  cursor: default;
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.visually-hidden {
+  position: absolute !important;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+.icon {
+  width: 20px;
+  height: 20px;
+  flex: none;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.icon.is-solid {
+  fill: currentColor;
+  stroke: none;
+}
+
+/* Header and footer */
+
+.app-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  width: 100%;
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 14px 16px;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.brand h1 {
+  margin: 0;
+  font-size: 1.15rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  line-height: 1.2;
+}
+
+.brand-mark {
+  width: 30px;
+  height: 30px;
+  flex: none;
+}
+
+.brand-track {
+  fill: none;
+  stroke: var(--line);
+  stroke-width: 4;
+}
+
+.brand-arc {
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 4;
+  stroke-linecap: round;
+}
+
+.brand-dot {
+  fill: var(--accent);
+}
+
+.header-actions {
+  display: flex;
+  gap: 8px;
+  flex: none;
+}
+
+.icon-button,
+.lang-button {
+  display: inline-grid;
+  place-items: center;
+  height: 40px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+  color: var(--muted);
+  transition: color var(--fast), background-color var(--fast), border-color var(--fast);
+}
+
+.icon-button {
+  width: 40px;
+  padding: 0;
+}
+
+.lang-button {
+  min-width: 48px;
+  padding: 0 12px;
+  color: var(--text);
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+}
+
+.icon-button:hover,
+.lang-button:hover {
+  color: var(--text);
+  border-color: var(--line-strong);
+  background: var(--raised);
+}
+
+.app-footer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 4px 16px 18px;
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+.app-footer a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 40px;
+  padding: 0 6px;
+  border-radius: 8px;
+  color: var(--text);
+  text-decoration: underline;
+  text-decoration-color: rgb(226 232 240 / 0.35);
+  text-underline-offset: 3px;
+  transition: color var(--fast), text-decoration-color var(--fast);
+}
+
+.app-footer a:hover {
+  color: var(--accent);
+  text-decoration-color: currentColor;
+}
+
+/* Layout and cards */
+
+.layout {
+  flex: 1;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 16px;
+  width: 100%;
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 2px 16px 20px;
+}
+
+.side {
+  display: grid;
+  gap: 16px;
+  align-content: start;
+  min-width: 0;
+}
+
+.card {
+  min-width: 0;
+  padding: 16px;
+  border: 1px solid rgb(148 163 184 / 0.12);
+  border-radius: var(--radius);
+  background: linear-gradient(180deg, rgb(255 255 255 / 0.025), transparent 140px), var(--surface);
+  box-shadow: var(--shadow);
+}
+
+.card-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 4px 12px;
+  margin-bottom: 12px;
+}
+
+.card-head h2 {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 700;
+}
+
+.card-caption {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+.pill {
+  padding: 2px 10px;
+  border-radius: 999px;
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+/* Buttons and fields */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 0 16px;
+  border: 1px solid transparent;
+  border-radius: var(--radius);
+  font-size: 0.95rem;
+  font-weight: 600;
+  line-height: 1.1;
+  white-space: nowrap;
+  transition: background-color var(--fast), border-color var(--fast), color var(--fast), transform var(--fast),
+    box-shadow var(--normal), filter var(--fast);
+}
+
+.btn:active {
+  transform: translateY(1px);
+}
+
+.btn-accent {
+  background: var(--accent);
+  color: var(--on-accent);
+}
+
+.btn-accent:hover {
+  filter: brightness(1.07);
+}
+
+.btn-secondary {
+  border-color: var(--line);
+  background: var(--raised);
+  color: var(--text);
+}
+
+.btn-secondary:hover {
+  border-color: var(--line-strong);
+}
+
+.btn-ghost {
+  border-color: var(--line);
+  background: transparent;
+  color: var(--text);
+}
+
+.btn-ghost:hover {
+  background: var(--raised);
+}
+
+.input {
+  min-width: 0;
+  min-height: 44px;
+  padding: 0 12px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--bg);
+  color: var(--text);
+  transition: border-color var(--fast), box-shadow var(--fast);
+}
+
+.input::placeholder {
+  color: var(--muted);
+  opacity: 1;
+}
+
+.input:focus,
+.estimate:focus-within {
+  border-color: var(--accent);
+  outline: none;
+  box-shadow: 0 0 0 3px rgb(248 113 113 / 0.2);
+}
+
+input[type="number"] {
+  appearance: textfield;
+  -moz-appearance: textfield;
+}
+
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  margin: 0;
+  -webkit-appearance: none;
+}
+
+/* Timer card */
+
+.timer-card {
+  --mode: var(--accent);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+}
+
+.timer-card[data-mode="short"] {
+  --mode: var(--short);
+}
+
+.timer-card[data-mode="long"] {
+  --mode: var(--long);
+}
+
+.mode-tabs {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 4px;
+  width: 100%;
+  max-width: 420px;
+  padding: 4px;
+  border: 1px solid rgb(148 163 184 / 0.1);
+  border-radius: var(--radius);
+  background: var(--bg);
+}
+
+.mode-tab {
+  min-height: 40px;
+  padding: 6px 8px;
+  border: 0;
+  border-radius: 9px;
+  background: transparent;
+  color: var(--muted);
+  font-size: 0.875rem;
+  font-weight: 600;
+  line-height: 1.2;
+  transition: background-color var(--normal) var(--ease), color var(--normal) var(--ease), box-shadow var(--normal);
+}
+
+.mode-tab:hover {
+  color: var(--text);
+}
+
+.mode-tab[aria-pressed="true"] {
+  background: var(--raised);
+  color: var(--text);
+  box-shadow: inset 0 -2px 0 var(--mode), 0 6px 14px -8px rgb(0 0 0 / 0.7);
+}
+
+/* The ring is not a drag area, so it keeps normal scrolling; "manipulation" only drops the double-tap zoom. */
+.dial {
+  position: relative;
+  width: min(100%, 320px, max(220px, 42vh));
+  aspect-ratio: 1;
+  border-radius: 50%;
+  cursor: pointer;
+  container-type: inline-size;
+  touch-action: manipulation;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.ring {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.ring-track {
+  fill: none;
+  stroke: rgb(148 163 184 / 0.12);
+  stroke-width: 14;
+}
+
+.ring-ticks {
+  fill: none;
+  stroke: rgb(148 163 184 / 0.2);
+  stroke-width: 6;
+  stroke-dasharray: 0.08 0.92;
+  stroke-dashoffset: 0.04;
+}
+
+.ring-ticks.is-major {
+  stroke: rgb(148 163 184 / 0.42);
+  stroke-width: 10;
+  stroke-dasharray: 0.026 0.974;
+  stroke-dashoffset: 0.013;
+}
+
+.ring-progress {
+  fill: none;
+  stroke: var(--mode);
+  stroke-width: 14;
+  stroke-linecap: round;
+  transition: stroke-dashoffset var(--normal) linear, stroke var(--normal) var(--ease), opacity var(--normal);
+}
+
+.ring-knob {
+  fill: var(--bg);
+  stroke: var(--mode);
+  stroke-width: 5;
+  transform-box: view-box;
+  transform-origin: 50% 50%;
+  transition: transform var(--normal) linear, stroke var(--normal) var(--ease);
+}
+
+/* Until the first state is drawn the ring does not animate, so it opens in place instead of sweeping in. */
+.timer-card:not(.is-ready) .ring-progress,
+.timer-card:not(.is-ready) .ring-knob {
+  transition: none;
+}
+
+.dial:hover .ring-track {
+  stroke: rgb(148 163 184 / 0.18);
+}
+
+.dial-face {
+  position: absolute;
+  inset: 20%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  text-align: center;
+  pointer-events: none;
+}
+
+.dial-face p {
+  margin: 0;
+}
+
+.dial-status {
+  color: var(--mode);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  transition: color var(--normal);
+}
+
+.dial-time {
+  font-size: 3.6rem;
+  font-size: 20cqi;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+  transition: color var(--normal);
+}
+
+.dial-time.has-hours {
+  font-size: 2.6rem;
+  font-size: 14cqi;
+}
+
+.dial-next {
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+.timer-card[data-status="paused"] .ring-progress {
+  opacity: 0.55;
+}
+
+.timer-card[data-status="paused"] .dial-time {
+  color: var(--muted);
+}
+
+.timer-card[data-status="finished"] .dial-status {
+  animation: soft-blink 1.6s ease-in-out infinite;
+}
+
+@keyframes soft-blink {
+  50% {
+    opacity: 0.4;
+  }
+}
+
+.cycle {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+}
+
+.cycle-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: rgb(148 163 184 / 0.25);
+  transition: background-color var(--normal), box-shadow var(--normal);
+}
+
+.cycle-dot.is-done {
+  background: var(--mode);
+}
+
+.cycle-dot.is-current {
+  background: transparent;
+  box-shadow: inset 0 0 0 2px var(--mode);
+}
+
+.current-task {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  max-width: 100%;
+  margin: 0;
+  text-align: center;
+}
+
+.current-label {
+  color: var(--muted);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.current-title {
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.current-task.is-empty .current-label {
+  display: none;
+}
+
+.current-task.is-empty .current-title {
+  color: var(--muted);
+  font-size: 0.9rem;
+  font-weight: 400;
+}
+
+.controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  width: 100%;
+}
+
+.btn-primary {
+  min-width: 150px;
+  min-height: 52px;
+  padding: 0 24px;
+  background: var(--mode);
+  color: var(--on-accent);
+  font-size: 1.05rem;
+  box-shadow: 0 12px 30px -14px var(--mode);
+}
+
+.btn-primary:hover {
+  filter: brightness(1.07);
+}
+
+.btn-primary[data-state="play"] .icon-pause,
+.btn-primary[data-state="pause"] .icon-play {
+  display: none;
+}
+
+.shortcuts {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 6px 16px;
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.8rem;
+}
+
+kbd {
+  display: inline-block;
+  min-width: 1.7em;
+  padding: 1px 6px;
+  border: 1px solid var(--line);
+  border-bottom-width: 2px;
+  border-radius: 6px;
+  background: var(--bg);
+  color: var(--text);
+  font: 600 0.75rem/1.4 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  text-align: center;
+}
+
+/* Tasks */
+
+.task-form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.task-title-input {
+  flex: 1 1 100%;
+}
+
+.estimate {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  min-height: 44px;
+  padding: 0 4px 0 12px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--bg);
+  color: var(--muted);
+  font-size: 0.82rem;
+  cursor: text;
+  transition: border-color var(--fast), box-shadow var(--fast);
+}
+
+.estimate input {
+  width: 3em;
+  min-height: 40px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--text);
+  font-size: 1rem;
+  text-align: center;
+}
+
+.estimate input:focus {
+  outline: none;
+}
+
+.btn-add {
+  flex: 1 1 auto;
+}
+
+.task-list {
+  display: grid;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.task {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 3px;
+  border: 1px solid transparent;
+  border-radius: var(--radius);
+  background: rgb(15 23 42 / 0.5);
+  transition: background-color var(--fast), border-color var(--fast);
+}
+
+.task.is-active {
+  border-color: rgb(248 113 113 / 0.45);
+  background: rgb(248 113 113 / 0.07);
+}
+
+.task-check-hit {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  flex: none;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.task-check {
+  width: 22px;
+  height: 22px;
+  margin: 0;
+  border: 2px solid #64748b;
+  border-radius: 7px;
+  background: transparent;
+  appearance: none;
+  -webkit-appearance: none;
+  cursor: pointer;
+  transition: background-color var(--fast), border-color var(--fast);
+}
+
+.task-check:hover {
+  border-color: var(--accent);
+}
+
+.task-check:checked {
+  border-color: var(--accent);
+  background: var(--accent) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%230f172a' stroke-width='3.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12.5l4.5 4.5L19 7.5'/%3E%3C/svg%3E") center / 15px no-repeat;
+}
+
+.task-main {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 5px;
+  min-width: 0;
+  min-height: 44px;
+  padding: 6px 8px;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  text-align: left;
+  transition: background-color var(--fast);
+}
+
+.task-main:not(:disabled):hover {
+  background: rgb(148 163 184 / 0.08);
+}
+
+.task-title {
+  max-width: 100%;
+  font-weight: 600;
+  line-height: 1.3;
+  overflow-wrap: anywhere;
+}
+
+.task.is-done .task-title {
+  color: var(--muted);
+  font-weight: 500;
+  text-decoration: line-through;
+  text-decoration-color: rgb(148 163 184 / 0.7);
+}
+
+.task-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--muted);
+  font-size: 0.78rem;
+}
+
+.task-bar {
+  width: 56px;
+  height: 4px;
+  overflow: hidden;
+  border-radius: 99px;
+  background: rgb(148 163 184 / 0.2);
+}
+
+.task-bar > span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--accent);
+}
+
+.task.is-done .task-bar > span {
+  background: #64748b;
+}
+
+.task-count {
+  font-variant-numeric: tabular-nums;
+}
+
+.task-count.is-over {
+  color: var(--warn);
+}
+
+/* flex: none keeps the edit and delete buttons at their full 40 px next to a long title. */
+.task .icon-button {
+  flex: none;
+  border-color: transparent;
+  background: transparent;
+}
+
+.task .icon-button:hover {
+  background: rgb(148 163 184 / 0.1);
+  color: var(--text);
+}
+
+.task .icon-button[data-role="delete"]:hover {
+  color: var(--accent);
+}
+
+.task.is-editing {
+  padding: 8px;
+  border-color: var(--line);
+}
+
+.task-edit {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  width: 100%;
+}
+
+.task-edit .input {
+  flex: 1 1 100%;
+}
+
+.task-edit-actions {
+  display: flex;
+  gap: 8px;
+  margin-left: auto;
+}
+
+.tasks-empty {
+  margin: 4px 0 0;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+/* Statistics */
+
+.tiles {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.tile {
+  padding: 10px 14px;
+  border: 1px solid rgb(148 163 184 / 0.08);
+  border-radius: var(--radius);
+  background: rgb(15 23 42 / 0.5);
+}
+
+.tile p {
+  margin: 0;
+}
+
+.tile-label {
+  color: var(--muted);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.tile-value {
+  font-size: clamp(1.1rem, 5vw, 1.35rem);
+  font-weight: 700;
+  line-height: 1.3;
+  font-variant-numeric: tabular-nums;
+}
+
+.tile-sub {
+  color: var(--muted);
+  font-size: 0.82rem;
+}
+
+.chart {
+  height: 168px;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.chart svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.chart-base {
+  stroke: rgb(148 163 184 / 0.22);
+  stroke-width: 1;
+}
+
+.bar rect {
+  fill: rgb(248 113 113 / 0.36);
+  transition: fill var(--fast);
+}
+
+.bar:hover rect {
+  fill: rgb(248 113 113 / 0.6);
+}
+
+.bar.is-today rect {
+  fill: var(--accent);
+}
+
+.bar-day,
+.bar-value {
+  fill: var(--muted);
+  font-size: 12px;
+  text-anchor: middle;
+}
+
+.bar-value {
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+}
+
+.bar.is-today .bar-day,
+.bar.is-today .bar-value {
+  fill: var(--text);
+  font-weight: 700;
+}
+
+/* Dialogs: the shared frame and the settings form */
+
+.dialog {
+  width: min(440px, calc(100% - 32px));
+  max-height: calc(100% - 32px);
+  padding: 0;
+  border: 1px solid rgb(148 163 184 / 0.16);
+  border-radius: var(--radius);
+  background: var(--surface);
+  color: var(--text);
+  box-shadow: 0 30px 80px -20px rgb(0 0 0 / 0.85);
+}
+
+.dialog[open] {
+  animation: dialog-in var(--normal) var(--ease);
+}
+
+.dialog::backdrop {
+  background: rgb(2 6 23 / 0.72);
+}
+
+@keyframes dialog-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.98);
+  }
+}
+
+.dialog-body {
+  display: grid;
+  gap: 18px;
+  padding: 20px;
+}
+
+.dialog-body h2 {
+  margin: 0;
+  font-size: 1.15rem;
+}
+
+/* Settings opens with focus on its heading, so a phone does not raise the keyboard for the first field. */
+#settings-title:focus {
+  outline: none;
+}
+
+.field-group {
+  display: grid;
+  gap: 10px;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.field-group legend {
+  margin-bottom: 8px;
+  padding: 0;
+  color: var(--muted);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.number-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.number-field {
+  display: grid;
+  gap: 6px;
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+.number-field .input,
+.interval-field .input {
+  width: 100%;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+
+.interval-field {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 10px;
+  font-size: 0.9rem;
+}
+
+.interval-field .input {
+  width: 72px;
+}
+
+.switch {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 44px;
+  font-size: 0.95rem;
+  cursor: pointer;
+}
+
+.switch input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: 0;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.switch-track {
+  position: relative;
+  flex: none;
+  width: 44px;
+  height: 26px;
+  border-radius: 999px;
+  background: var(--line);
+  transition: background-color var(--normal) var(--ease);
+}
+
+.switch-track::after {
+  content: "";
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--text);
+  box-shadow: 0 2px 6px rgb(0 0 0 / 0.4);
+  transition: transform var(--normal) var(--ease);
+}
+
+.switch input:checked + .switch-track {
+  background: var(--accent);
+}
+
+.switch input:checked + .switch-track::after {
+  transform: translateX(18px);
+  background: #fff;
+}
+
+.switch input:focus-visible + .switch-track {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.switch input:disabled + .switch-track {
+  opacity: 0.45;
+}
+
+.hint {
+  margin: 0;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: rgb(252 211 77 / 0.1);
+  color: var(--warn);
+  font-size: 0.85rem;
+}
+
+.settings-note {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.82rem;
+}
+
+.dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+/* Confirmation dialog */
+
+.dialog-confirm {
+  width: min(380px, calc(100% - 32px));
+}
+
+.dialog-text {
+  margin: -8px 0 0;
+  color: var(--muted);
+}
+
+/* Screen sizes and preferences */
+
+@media (max-width: 399px) {
+  .btn-secondary {
+    flex: none;
+    width: 48px;
+    padding: 0;
+  }
+
+  .btn-secondary .btn-label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+}
+
+/* Very narrow windows: Start gives up width so Reset and Skip keep their 48 px. */
+@media (max-width: 339px) {
+  .btn-primary {
+    min-width: 0;
+    padding: 0 16px;
+  }
+}
+
+@media (min-width: 480px) {
+  .card {
+    padding: 20px;
+  }
+
+  .task-title-input {
+    flex-basis: 0;
+  }
+
+  .btn-add {
+    flex: none;
+  }
+}
+
+@media (min-width: 880px) {
+  .layout {
+    grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
+    gap: 20px;
+    padding-top: 6px;
+  }
+
+  .timer-card {
+    justify-content: center;
+    gap: 16px;
+    padding: 24px;
+  }
+
+  .dial {
+    width: min(100%, 340px, max(240px, 46vh));
+  }
+}
+
+@media (hover: none) {
+  .shortcuts {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

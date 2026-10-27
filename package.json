@@ -1,0 +1,11 @@
+{
+  "name": "focus-timer",
+  "version": "1.0.0",
+  "description": "Focus interval timer with work/break cycles, a task list and weekly stats. Vanilla JS, no build step.",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node --test"
+  },
+  "license": "MIT"
+}

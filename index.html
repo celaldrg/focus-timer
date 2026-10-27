@@ -1,0 +1,245 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Focus Timer</title>
+  <meta name="description" content="A calm focus timer with focus sessions, short and long breaks, a task list and a 7-day chart. Runs in your browser; your data stays on your device.">
+  <meta name="theme-color" content="#0f172a">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Focus Timer">
+  <meta property="og:description" content="A calm focus timer with focus sessions, short and long breaks, a task list and a 7-day chart.">
+  <meta property="og:url" content="https://celaldrg.github.io/focus-timer/">
+  <meta property="og:image" content="https://celaldrg.github.io/focus-timer/docs/screenshot.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2064%2064'%3E%3Crect%20width='64'%20height='64'%20rx='14'%20fill='%230f172a'/%3E%3Ccircle%20cx='32'%20cy='32'%20r='19'%20fill='none'%20stroke='%23334155'%20stroke-width='7'/%3E%3Cpath%20d='M32%2013a19%2019%200%201%201-19%2019'%20fill='none'%20stroke='%23f87171'%20stroke-width='7'%20stroke-linecap='round'/%3E%3Ccircle%20cx='32'%20cy='32'%20r='5'%20fill='%23f87171'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="style.css">
+  <script type="module" src="src/main.js"></script>
+</head>
+<body>
+  <header class="app-header">
+    <div class="brand">
+      <svg class="brand-mark" viewBox="0 0 32 32" aria-hidden="true" focusable="false">
+        <circle class="brand-track" cx="16" cy="16" r="11"/>
+        <path class="brand-arc" d="M16 5a11 11 0 1 1-11 11"/>
+        <circle class="brand-dot" cx="16" cy="16" r="3"/>
+      </svg>
+      <h1 data-i18n="appTitle">Focus Timer</h1>
+    </div>
+    <div class="header-actions">
+      <button type="button" class="icon-button" id="settings-button" aria-haspopup="dialog"
+        aria-label="Settings" title="Settings" data-i18n-aria-label="settings" data-i18n-title="settings">
+        <svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+          <path d="M4 7h9M18 7h2M4 12h3M12 12h8M4 17h11"/>
+          <circle cx="15.5" cy="7" r="2.5"/>
+          <circle cx="9.5" cy="12" r="2.5"/>
+          <circle cx="17.5" cy="17" r="2.5"/>
+        </svg>
+      </button>
+      <button type="button" class="lang-button" id="lang-button"
+        aria-label="TR – switch to Turkish" data-i18n="langButton" data-i18n-aria-label="langButtonLabel">TR</button>
+    </div>
+  </header>
+
+  <main class="layout">
+    <section class="card timer-card" id="timer-card" data-mode="focus" data-status="idle" aria-labelledby="timer-heading">
+      <h2 class="visually-hidden" id="timer-heading" data-i18n="timerHeading">Timer</h2>
+
+      <div class="mode-tabs" role="group" aria-label="Session type" data-i18n-aria-label="modeGroupLabel">
+        <button type="button" class="mode-tab" data-mode="focus" aria-pressed="true" data-i18n="modeFocus">Focus</button>
+        <button type="button" class="mode-tab" data-mode="short" aria-pressed="false" data-i18n="modeShort">Short break</button>
+        <button type="button" class="mode-tab" data-mode="long" aria-pressed="false" data-i18n="modeLong">Long break</button>
+      </div>
+
+      <div class="dial" id="dial" title="Tap the ring to start or pause" data-i18n-title="dialHint">
+        <svg class="ring" viewBox="0 0 320 320" aria-hidden="true" focusable="false">
+          <defs>
+            <filter id="ring-glow" filterUnits="userSpaceOnUse" x="0" y="0" width="320" height="320">
+              <feGaussianBlur stdDeviation="5" result="blur"/>
+              <feMerge>
+                <feMergeNode in="blur"/>
+                <feMergeNode in="SourceGraphic"/>
+              </feMerge>
+            </filter>
+          </defs>
+          <circle class="ring-track" cx="160" cy="160" r="144"/>
+          <circle class="ring-ticks" cx="160" cy="160" r="122" pathLength="60" transform="rotate(-90 160 160)"/>
+          <circle class="ring-ticks is-major" cx="160" cy="160" r="122" pathLength="12" transform="rotate(-90 160 160)"/>
+          <circle class="ring-progress" id="ring-progress" cx="160" cy="160" r="144" transform="rotate(-90 160 160)" filter="url(#ring-glow)"/>
+          <circle class="ring-knob" id="ring-knob" cx="160" cy="16" r="10"/>
+        </svg>
+        <div class="dial-face">
+          <p class="dial-status" id="dial-status"></p>
+          <p class="dial-time" id="dial-time" role="timer">25:00</p>
+          <p class="dial-next" id="dial-next"></p>
+        </div>
+      </div>
+
+      <div class="cycle" id="cycle" role="img"></div>
+
+      <p class="current-task" id="current-task">
+        <span class="current-label" id="current-label"></span>
+        <span class="current-title" id="current-title"></span>
+      </p>
+
+      <div class="controls">
+        <button type="button" class="btn btn-secondary" id="reset-button" title="Reset the session (R)" data-i18n-title="resetTitle">
+          <svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path d="M7.05 7.05A7 7 0 1 1 5 12"/>
+            <path d="M10.55 7.05H7.05V3.55"/>
+          </svg>
+          <span class="btn-label" data-i18n="reset">Reset</span>
+        </button>
+        <button type="button" class="btn btn-primary" id="toggle-button" data-state="play">
+          <svg class="icon is-solid icon-play" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path d="M8 5.6v12.8a1 1 0 0 0 1.5.86l10.2-6.4a1 1 0 0 0 0-1.72L9.5 4.74A1 1 0 0 0 8 5.6z"/>
+          </svg>
+          <svg class="icon is-solid icon-pause" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <rect x="6" y="5" width="4.5" height="14" rx="1.2"/>
+            <rect x="13.5" y="5" width="4.5" height="14" rx="1.2"/>
+          </svg>
+          <span id="toggle-label">Start</span>
+        </button>
+        <button type="button" class="btn btn-secondary" id="skip-button" title="Skip to the next session (S)" data-i18n-title="skipTitle">
+          <span class="btn-label" data-i18n="skip">Skip</span>
+          <svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path fill="currentColor" d="M6 6.2v11.6a1 1 0 0 0 1.55.83l8.4-5.8a1 1 0 0 0 0-1.66l-8.4-5.8A1 1 0 0 0 6 6.2z"/>
+            <path d="M19 5.5v13"/>
+          </svg>
+        </button>
+      </div>
+
+      <p class="shortcuts">
+        <span><kbd data-i18n="keySpace">Space</kbd> <span data-i18n="hintToggle">start / pause</span></span>
+        <span><kbd>S</kbd> <span data-i18n="hintSkip">skip</span></span>
+        <span><kbd>R</kbd> <span data-i18n="hintReset">reset</span></span>
+      </p>
+    </section>
+
+    <div class="side">
+      <section class="card tasks-card" aria-labelledby="tasks-heading">
+        <div class="card-head">
+          <h2 id="tasks-heading" data-i18n="tasksHeading">Tasks</h2>
+          <span class="pill" id="tasks-count"></span>
+        </div>
+        <form class="task-form" id="task-form" novalidate autocomplete="off">
+          <input class="input task-title-input" type="text" name="title" maxlength="120"
+            placeholder="What are you working on?" aria-label="Task title"
+            data-i18n-placeholder="taskPlaceholder" data-i18n-aria-label="taskTitleLabel">
+          <label class="estimate" title="Estimated focus sessions" data-i18n-title="estimateTitle">
+            <span data-i18n="estimateShort">Est.</span>
+            <input type="number" name="estimate" min="1" max="20" step="1" value="1" inputmode="numeric">
+          </label>
+          <button type="submit" class="btn btn-accent btn-add">
+            <svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 5v14M5 12h14"/></svg>
+            <span data-i18n="addTask">Add</span>
+          </button>
+        </form>
+        <ul class="task-list" id="task-list" aria-labelledby="tasks-heading"></ul>
+        <p class="tasks-empty" id="tasks-empty" data-i18n="tasksEmpty" hidden>No tasks yet. Add one and its focus sessions are counted here.</p>
+      </section>
+
+      <section class="card stats-card" aria-labelledby="stats-heading">
+        <div class="card-head">
+          <h2 id="stats-heading" data-i18n="statsHeading">Last 7 days</h2>
+          <p class="card-caption" data-i18n="statsCaption">Focus minutes per day</p>
+        </div>
+        <div class="tiles">
+          <div class="tile">
+            <p class="tile-label" data-i18n="today">Today</p>
+            <p class="tile-value" id="today-time"></p>
+            <p class="tile-sub" id="today-sessions"></p>
+          </div>
+          <div class="tile">
+            <p class="tile-label" data-i18n="week">7 days</p>
+            <p class="tile-value" id="week-time"></p>
+            <p class="tile-sub" id="week-sessions"></p>
+          </div>
+        </div>
+        <div class="chart" id="chart"></div>
+      </section>
+    </div>
+  </main>
+
+  <footer class="app-footer">
+    <span data-i18n="footerLicense">MIT</span>
+    <span aria-hidden="true">·</span>
+    <a href="https://github.com/celaldrg/focus-timer" data-i18n="sourceLink">Source on GitHub</a>
+  </footer>
+
+  <p class="visually-hidden" id="announcer" role="status" aria-live="polite"></p>
+
+  <dialog class="dialog" id="settings-dialog" aria-labelledby="settings-title">
+    <form class="dialog-body" novalidate>
+      <h2 id="settings-title" data-i18n="settingsTitle" tabindex="-1" autofocus>Settings</h2>
+
+      <fieldset class="field-group">
+        <legend data-i18n="lengthsLegend">Session lengths (minutes)</legend>
+        <div class="number-grid">
+          <label class="number-field">
+            <span data-i18n="focusLength">Focus</span>
+            <input class="input" type="number" name="focusMinutes" step="1" inputmode="numeric">
+          </label>
+          <label class="number-field">
+            <span data-i18n="shortLength">Short break</span>
+            <input class="input" type="number" name="shortBreakMinutes" step="1" inputmode="numeric">
+          </label>
+          <label class="number-field">
+            <span data-i18n="longLength">Long break</span>
+            <input class="input" type="number" name="longBreakMinutes" step="1" inputmode="numeric">
+          </label>
+        </div>
+        <label class="interval-field">
+          <span data-i18n="intervalLabel">Long break every</span>
+          <input class="input" type="number" name="longBreakInterval" step="1" inputmode="numeric">
+          <span data-i18n="intervalUnit">focus sessions</span>
+        </label>
+      </fieldset>
+
+      <fieldset class="field-group">
+        <legend data-i18n="behaviourLegend">Automation and alerts</legend>
+        <label class="switch">
+          <span data-i18n="autoStartBreaks">Start breaks automatically</span>
+          <input type="checkbox" role="switch" name="autoStartBreaks">
+          <span class="switch-track" aria-hidden="true"></span>
+        </label>
+        <label class="switch">
+          <span data-i18n="autoStartFocus">Start focus sessions automatically</span>
+          <input type="checkbox" role="switch" name="autoStartFocus">
+          <span class="switch-track" aria-hidden="true"></span>
+        </label>
+        <label class="switch">
+          <span data-i18n="soundSetting">Chime when a session ends</span>
+          <input type="checkbox" role="switch" name="sound">
+          <span class="switch-track" aria-hidden="true"></span>
+        </label>
+        <label class="switch">
+          <span data-i18n="notifySetting">Notification when a session ends</span>
+          <input type="checkbox" role="switch" name="notifications">
+          <span class="switch-track" aria-hidden="true"></span>
+        </label>
+        <p class="hint" id="notify-hint" hidden></p>
+      </fieldset>
+
+      <p class="settings-note" data-i18n="settingsNote">A session that has already started keeps its length; new lengths apply from the next session.</p>
+
+      <div class="dialog-actions">
+        <button type="button" class="btn btn-ghost" data-role="cancel" data-i18n="cancel">Cancel</button>
+        <button type="submit" class="btn btn-accent" data-i18n="save">Save</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog class="dialog dialog-confirm" id="confirm-dialog" role="alertdialog"
+    aria-labelledby="confirm-title" aria-describedby="confirm-body">
+    <form class="dialog-body" novalidate>
+      <h2 id="confirm-title"></h2>
+      <p class="dialog-text" id="confirm-body"></p>
+      <div class="dialog-actions">
+        <button type="button" class="btn btn-ghost" data-role="cancel" data-i18n="cancel">Cancel</button>
+        <button type="submit" class="btn btn-accent" data-role="confirm"></button>
+      </div>
+    </form>
+  </dialog>
+</body>
+</html>
