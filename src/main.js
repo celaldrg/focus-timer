@@ -59,6 +59,7 @@ const tasksView = createTasksView(document, {
   editTask: change(app.editTask),
   setTaskDone: change(app.setTaskDone),
   deleteTask: change(app.deleteTask),
+  reinsertTask: change(app.reinsertTask),
   selectTask: change(app.selectTask),
 });
 const statsView = createStatsView(document);

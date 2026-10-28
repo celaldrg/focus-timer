@@ -390,8 +390,11 @@ describe('tasks and the demo', () => {
     app.setTaskDone(2, true);
     assert.equal(app.getView().activeTaskId, 1);
     app.editTask(1, { title: 'First, renamed' });
+    const removed = app.getView().tasks[1];
     app.deleteTask(2);
     assert.deepEqual(app.getView().tasks.map((task) => task.title), ['First, renamed']);
+    app.reinsertTask(removed, 1, false);
+    assert.deepEqual(app.getView().tasks.map((task) => [task.title, task.spent, task.done]), [['First, renamed', 0, false], ['Second', 1, true]]);
   });
 
   test('the demo is a running focus session at 60 % with three tasks and a full week', () => {

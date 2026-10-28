@@ -7,7 +7,7 @@ import { normalizeSettings } from './settings.js';
 import {
   applySettings, pause, progressAt, remainingAt, reset, resume, selectMode, skip, start, tick, toggle, upNext,
 } from './timer.js';
-import { addTask, creditActiveTask, deleteTask, editTask, selectTask, setTaskDone } from './tasks.js';
+import { addTask, creditActiveTask, deleteTask, editTask, reinsertTask, selectTask, setTaskDone } from './tasks.js';
 import { lastDays, pruneStats, recordFocusSession } from './stats.js';
 import { restoreAppState } from './state.js';
 
@@ -58,6 +58,7 @@ export const STORAGE_KEY = 'focus-timer:state';
  * @property {(id: number, changes: { title?: string, estimate?: number }) => void} editTask
  * @property {(id: number, done: boolean) => void} setTaskDone
  * @property {(id: number) => void} deleteTask
+ * @property {(task: import('./tasks.js').Task, index: number, wasActive: boolean) => void} reinsertTask  undoes a delete
  * @property {(id: number) => void} selectTask
  */
 
@@ -119,6 +120,7 @@ export function createFocusApp({ clock = Date, storage = null, initialState } = 
     editTask: (id, changes) => change({ tasks: editTask(state.tasks, id, changes) }),
     setTaskDone: (id, done) => change({ tasks: setTaskDone(state.tasks, id, done) }),
     deleteTask: (id) => change({ tasks: deleteTask(state.tasks, id) }),
+    reinsertTask: (task, index, wasActive) => change({ tasks: reinsertTask(state.tasks, task, index, wasActive) }),
     selectTask: (id) => change({ tasks: selectTask(state.tasks, id) }),
   };
 }

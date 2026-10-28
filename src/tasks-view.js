@@ -1,10 +1,13 @@
 /**
  * The task panel: the add form and the list, where a task can be ticked off, made active, edited or
- * deleted. Rows are rebuilt when the tasks change; keyboard focus and an unsaved edit survive the rebuild.
+ * deleted. A delete can be undone from a short-lived toast. Rows are rebuilt when the tasks change; keyboard focus and an unsaved edit survive the rebuild.
  */
 import { el, setText } from './dom.js';
 import { icon } from './icons.js';
 import { MAX_ESTIMATE, MAX_TITLE_LENGTH } from './tasks.js';
+
+/** How long the undo toast stays after a delete. */
+const UNDO_MS = 6000;
 
 /** @typedef {import('./app.js').View} View */
 /** @typedef {import('./tasks.js').Task} Task */
@@ -17,6 +20,7 @@ import { MAX_ESTIMATE, MAX_TITLE_LENGTH } from './tasks.js';
  * @property {(id: number, changes: { title: string, estimate: string }) => void} editTask
  * @property {(id: number, done: boolean) => void} setTaskDone
  * @property {(id: number) => void} deleteTask
+ * @property {(task: Task, index: number, wasActive: boolean) => void} reinsertTask  undoes a delete
  * @property {(id: number) => void} selectTask
  */
 
@@ -34,6 +38,9 @@ export function createTasksView(root, actions) {
     list: root.querySelector('#task-list'),
     empty: root.querySelector('#tasks-empty'),
     count: root.querySelector('#tasks-count'),
+    toast: root.querySelector('#undo-toast'),
+    toastText: root.querySelector('#undo-text'),
+    undoButton: root.querySelector('#undo-button'),
   };
   let shown = { tasks: null, activeId: null, t: null };
   let current = null;
@@ -41,6 +48,8 @@ export function createTasksView(root, actions) {
   let editing = null;
   /** The control to focus once the rows are rebuilt: { id, role, selection? }. */
   let focusAfterDraw = null;
+  /** The last deleted task while its undo toast is shown: { task, index, wasActive, timeout }. */
+  let deleted = null;
 
   function render(view, t) {
     if (view.tasks === shown.tasks && view.activeTaskId === shown.activeId && t === shown.t) return;
@@ -58,6 +67,7 @@ export function createTasksView(root, actions) {
       : taskRow(task, task.id === view.activeTaskId, t))));
     ui.empty.hidden = view.tasks.length > 0;
     setText(ui.count, t('openCount', { count: view.tasks.filter((task) => !task.done).length }));
+    if (deleted) setText(ui.toastText, t('taskDeleted', { title: deleted.task.title }));
     restoreFocus();
   }
 
@@ -110,13 +120,36 @@ export function createTasksView(root, actions) {
   }
 
   function remove(id) {
-    const { tasks } = current.view;
+    const { tasks, activeTaskId } = current.view;
     const index = tasks.findIndex((task) => task.id === id);
     const neighbour = tasks[index + 1] ?? tasks[index - 1];
     focusAfterDraw = neighbour ? { id: neighbour.id, role: 'delete', selection: null } : null;
+    showUndo({ task: tasks[index], index, wasActive: id === activeTaskId });
     actions.deleteTask(id);
     if (!neighbour) ui.titleInput.focus();
   }
+
+  function showUndo(entry) {
+    clearTimeout(deleted?.timeout);
+    deleted = { ...entry, timeout: setTimeout(hideUndo, UNDO_MS) };
+    ui.toast.hidden = false;
+  }
+
+  function hideUndo() {
+    clearTimeout(deleted?.timeout);
+    deleted = null;
+    ui.toast.hidden = true;
+  }
+
+  function undoDelete() {
+    if (!deleted) return;
+    const { task, index, wasActive } = deleted;
+    hideUndo();
+    focusAfterDraw = { id: task.id, role: 'delete', selection: null };
+    actions.reinsertTask(task, index, wasActive);
+  }
+
+  ui.undoButton.addEventListener('click', undoDelete);
 
   ui.form.addEventListener('submit', (event) => {
     event.preventDefault();

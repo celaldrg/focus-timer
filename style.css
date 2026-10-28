@@ -841,6 +841,55 @@ kbd {
   color: var(--accent);
 }
 
+/* A little space keeps Delete from sitting right against Edit. */
+.task .icon-button[data-role="delete"] {
+  margin-left: 6px;
+}
+
+.toast {
+  position: fixed;
+  left: 50%;
+  bottom: 16px;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: max-content;
+  max-width: calc(100vw - 32px);
+  padding: 6px 6px 6px 16px;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius);
+  background: var(--raised);
+  color: var(--text);
+  box-shadow: var(--shadow);
+  transform: translateX(-50%);
+  animation: toast-in var(--normal) var(--ease);
+}
+
+.toast[hidden] {
+  display: none;
+}
+
+.toast-text {
+  min-width: 0;
+  overflow: hidden;
+  font-size: 0.92rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.toast-button {
+  flex: none;
+  color: var(--accent);
+}
+
+@keyframes toast-in {
+  from {
+    opacity: 0;
+    transform: translate(-50%, 8px);
+  }
+}
+
 .task.is-editing {
   padding: 8px;
   border-color: var(--line);

@@ -89,6 +89,25 @@ export function deleteTask(list, id) {
 }
 
 /**
+ * Puts a deleted task back (the undo of deleteTask) at its old position, clamped to the list. It becomes
+ * the active task again when it was active and is still open. A task whose id is already in the list, or
+ * that is not a valid task, is ignored.
+ * @param {TaskList} list
+ * @param {Task} task  the task as it was when deleted
+ * @param {number} index  its position before the delete
+ * @param {boolean} [wasActive=false]
+ * @returns {TaskList}
+ */
+export function reinsertTask(list, task, index, wasActive = false) {
+  const restored = restoreTask(task);
+  if (!restored || list.items.some((item) => item.id === restored.id)) return list;
+  const at = Math.min(Math.max(0, Math.trunc(index) || 0), list.items.length);
+  const items = [...list.items.slice(0, at), restored, ...list.items.slice(at)];
+  const activeId = wasActive && !restored.done ? restored.id : list.activeId;
+  return withActiveTask({ ...list, items, activeId, nextId: Math.max(list.nextId, restored.id + 1) });
+}
+
+/**
  * Makes an open task the active one. Done or unknown tasks are ignored.
  * @param {TaskList} list
  * @param {number} id

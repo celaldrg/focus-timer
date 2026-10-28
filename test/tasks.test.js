@@ -2,7 +2,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import {
   MAX_ESTIMATE, MAX_TITLE_LENGTH, addTask, createTaskList, creditActiveTask, deleteTask, editTask,
-  restoreTaskList, selectTask, setTaskDone,
+  reinsertTask, restoreTaskList, selectTask, setTaskDone,
 } from '../src/tasks.js';
 
 function listOf(...titles) {
@@ -61,6 +61,29 @@ test('deleting a task removes it and repairs the active task', () => {
   assert.equal(list.activeId, 2);
   assert.equal(deleteTask(list, 42), list);
   assert.equal(deleteTask(list, 2).activeId, null);
+});
+
+test('undoing a delete puts the task back where it was, with its progress and active state', () => {
+  const before = creditActiveTask(selectTask(listOf('A', 'B', 'C'), 2));
+  const deleted = before.items[1];
+  const after = deleteTask(before, 2);
+  assert.equal(after.activeId, 1);
+
+  const undone = reinsertTask(after, deleted, 1, true);
+  assert.deepEqual(undone, before);
+  assert.equal(reinsertTask(undone, deleted, 1, true), undone, 'a task already in the list is ignored');
+  assert.equal(reinsertTask(after, { id: 0, title: '' }, 0), after, 'an invalid task is ignored');
+
+  const notActive = reinsertTask(after, deleted, 1, false);
+  assert.equal(notActive.activeId, 1);
+  assert.deepEqual(reinsertTask(after, deleted, 99).items.map((task) => task.title), ['A', 'C', 'B']);
+});
+
+test('a task put back after its id was reused keeps the ids unique and nextId ahead', () => {
+  const emptied = deleteTask(listOf('A'), 1);
+  const undone = reinsertTask(emptied, { id: 1, title: 'A', estimate: 2, spent: 0, done: false }, 0, true);
+  assert.equal(undone.activeId, 1);
+  assert.equal(addTask(undone, 'B').items[1].id, 2);
 });
 
 test('only open tasks can be selected', () => {
